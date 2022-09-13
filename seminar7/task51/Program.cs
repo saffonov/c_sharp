@@ -18,7 +18,11 @@ int[,] GetArray(int m, int n, int minValue, int maxValue)
     return result;
 }
 
-void PrintArray(int[,] array)
+
+/// <symmary>
+/// Print 2D double Array
+/// </symmary>
+void PrintArray(double[,] array)
 {
     for (int i = 0; i < array.GetLength(0); i++)
     {
