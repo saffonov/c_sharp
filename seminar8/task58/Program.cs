@@ -11,8 +11,8 @@
 
     // |a11 a21 a1m|       |b11 b21 b1n|       |c11 c21 c1n|
     // |a21 a22 a2m|   x   |b21 b22 b2n|   =   |c21 c22 c2n| 
-    // |al1     alm|       |b21 b22 bmn|       |cl1 cl1 cln|
-    // L - кол. строк 1 матрицы; M - кол. столбцов 1 матрицы, кол. строк 2 матрицы; N - кол. строк 2 матрицы
+    // |al1     alm|       |bm1 b22 bmn|       |cl1 cl1 cln|
+    // L - кол. строк 1 матрицы; M - кол. столбцов 1 матрицы, кол. строк 2 матрицы; N - кол. столбцов 2 матрицы
     // L - кол. строк результирующей матрицы, N - количество столбцов результирующей матрицы 
 
     // cij = r=1 ... m SUM (air * brj) j= 1 ..l ; j = 1 .. n
@@ -23,9 +23,10 @@ int[,] MultMatrix(int[,] A, int[,] B)
 // L - кол. строк 1 матрицы; M - кол. столбцов 1 матрицы, кол. строк 2 матрицы; N - кол. строк 2 матрицы
 // L - кол. строк результирующей матрицы, N - количество столбцов результирующей матрицы 
 {
-    int L = A.GetLength(0);
+    int L = A.GetLength(0); 
     int M = A.GetLength(1);
-    int N = A.GetLength(1);
+    int N = B.GetLength(1);
+    //Console.WriteLine($"L = {L}, M= {M}, N = {N}");
     int[,] C = new int[L, N];
     for (int i = 0; i < L; i++)
     {
@@ -35,6 +36,7 @@ int[,] MultMatrix(int[,] A, int[,] B)
            for (int r = 0; r < M ; r++)
            {
                 C[i,j] += A[i,r]*B[r,j];
+                //Console.WriteLine($"r = {r}, i= {i}, j = {j}");
            }
 
         }
@@ -76,7 +78,7 @@ Console.WriteLine("START");
 
 Console.WriteLine("умножение двух матриц выполнимо если число столбцов в 1 матрице равно числу строк во втором");
 // L - кол. строк 1 матрицы; M - кол. столбцов 1 матрицы, кол. строк 2 матрицы; N - кол. строк 2 матрицы
-// L - кол. строк результирующей матрицы, N - количество столбцов результирующей матрицы 
+// L - кол. строк результирующей матрицы, N - количество столбцов результирующей матрицы  
 Console.Write("Введите количество строк первой матрицы:");
 int Lm = int.Parse(Console.ReadLine());
 
@@ -102,10 +104,7 @@ PrintArray(arrayB);
 
 int[,] arrayC = MultMatrix(arrayA,  arrayB);
 
-Console.WriteLine("Массив C");
+Console.WriteLine("Результат умножения А на В:");
 PrintArray(arrayC);
-
-// Console.WriteLine(String.Join(" ", MyLine));
-
 
 
