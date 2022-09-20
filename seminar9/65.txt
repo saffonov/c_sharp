@@ -1,0 +1,46 @@
+void NumbersRec(int m, int n)
+{
+    Console.Write(m);
+    if (m < n)
+    {
+        Console.Write(", ");
+        NumbersRec(++m, n);
+    }
+}
+void ShowNumbers(int start, int end, string linetoPrint)
+{
+    if (start == end)
+    {
+        linetoPrint = start.ToString() + linetoPrint;
+        Console.Write($"{linetoPrint}");
+    }
+    else
+    {
+        linetoPrint = ", " + end.ToString() + linetoPrint;
+        ShowNumbers(start, end - 1, linetoPrint);
+    }
+}
+
+
+void ShowNumbers(int digit, string linetoPrint) 
+{
+    if (digit == 1) 
+    {        
+        linetoPrint = digit.ToString() + linetoPrint;
+        Console.Write($"{linetoPrint}");
+    }
+    else 
+    {
+        linetoPrint = ", " + digit.ToString() + linetoPrint;
+        ShowNumbers(digit - 1, linetoPrint);
+    }
+}
+void NumbersRec(int n, int current = 1)
+{
+    Console.Write(current);
+    if (current < n)
+    {
+        Console.Write(", ");
+        NumbersRec(n, ++current);
+    }
+}

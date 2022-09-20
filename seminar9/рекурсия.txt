@@ -1,0 +1,293 @@
+замечания
+
+Обратите внимание, что использование рекурсии может оказать серьезное влияние на ваш код, так как каждый вызов рекурсивной функции будет добавлен в стек. Если слишком много вызовов, это может привести к исключению StackOverflow . Большинство «естественных рекурсивных функций» можно записать как конструкцию цикла for , while или foreach , и в то же время не выглядящие настолько шикарными или умными, будут более эффективными.
+
+Всегда думайте дважды и тщательно используйте рекурсию - знайте, почему вы ее используете:
+
+    рекурсия должна использоваться, когда вы знаете, что количество рекурсивных вызовов не является чрезмерным
+        чрезмерные средства, это зависит от того, сколько памяти доступно 
+    рекурсия используется, потому что это более ясная и чистая версия кода, более читаемая, чем итеративная или петлевая функция. Часто это происходит потому, что он дает более чистый и более компактный код (также меньше строк кода).
+        но помните, что он может быть менее эффективным! Например, в рекурсии Фибоначчи для вычисления n-го числа в последовательности время вычисления будет экспоненциально расти! 
+
+Если вы хотите больше теории, прочитайте:
+
+    https://www.cs.umd.edu/class/fall2002/cmsc214/Tutorial/recursion2.html
+    https://en.wikipedia.org/wiki/Recursion#In_computer_science 
+
+Рекурсивно описывать структуру объекта
+
+Рекурсия - это когда метод вызывает себя. Предпочтительно он будет делать это до тех пор, пока не будет выполнено конкретное условие, а затем оно нормально выйдет из метода, возвращаясь к точке, из которой был вызван метод. Если нет, исключение переполнения стека может возникнуть из-за слишком большого количества рекурсивных вызовов.
+
+/// <summary>
+/// Create an object structure the code can recursively describe
+/// </summary>
+public class Root
+{
+    public string Name { get; set; }
+    public ChildOne Child { get; set; }
+}
+public class ChildOne
+{
+    public string ChildOneName { get; set; }
+    public ChildTwo Child { get; set; }
+}
+public class ChildTwo
+{
+    public string ChildTwoName { get; set; }
+}
+/// <summary>
+/// The console application with the recursive function DescribeTypeOfObject
+/// </summary>
+public class Program
+{
+    static void Main(string[] args)
+    {
+        // point A, we call the function with type 'Root'
+        DescribeTypeOfObject(typeof(Root));
+        Console.WriteLine("Press a key to exit");
+        Console.ReadKey();
+    }
+
+    static void DescribeTypeOfObject(Type type)
+    {
+        // get all properties of this type
+        Console.WriteLine($"Describing type {type.Name}");
+        PropertyInfo[] propertyInfos = type.GetProperties();
+        foreach (PropertyInfo pi in propertyInfos)
+        {
+            Console.WriteLine($"Has property {pi.Name} of type {pi.PropertyType.Name}");
+            // is a custom class type? describe it too
+            if (pi.PropertyType.IsClass && !pi.PropertyType.FullName.StartsWith("System."))
+            {
+                // point B, we call the function type this property
+                DescribeTypeOfObject(pi.PropertyType);
+            }
+        }
+        // done with all properties
+        // we return to the point where we were called
+        // point A for the first call
+        // point B for all properties of type custom class
+    }
+}
+
+Рекурсия на английском языке
+
+Рекурсия может быть определена как:
+
+    Метод, который вызывает себя до тех пор, пока не будет выполнено определенное условие. 
+
+Отличным и простым примером рекурсии является метод, который получит факториал определенного числа:
+
+public int Factorial(int number)
+{
+    return number == 0 ? 1 : n * Factorial(number - 1);
+}
+
+В этом методе мы видим, что метод примет аргумент, number .
+
+Шаг за шагом:
+
+Учитывая пример, выполнение Factorial(4)
+
+    number (4) == 1 ?
+    Нет? return 4 * Factorial(number-1) (3)
+    Поскольку метод вызывается еще раз, он теперь повторяет первый шаг, используя Factorial(3) в качестве нового аргумента.
+    Это продолжается до тех пор, пока не будет выполнено Factorial(1) и number (1) == 1 вернется 1.
+    В целом, расчет «накапливает» 4 * 3 * 2 * 1 и, наконец, возвращает 24. 
+
+Ключом к пониманию рекурсии является то, что метод вызывает новый экземпляр самого себя. После возвращения выполнение вызывающего экземпляра продолжается.
+Использование рекурсии для получения дерева каталогов
+
+Одним из видов использования рекурсии является перемещение по иерархической структуре данных, как дерево каталогов файловой системы, не зная, сколько уровней имеет дерево или количество объектов на каждом уровне. В этом примере вы увидите, как использовать рекурсию в дереве каталогов, чтобы найти все подкаталоги указанного каталога и распечатать все дерево на консоли.
+
+internal class Program
+{
+    internal const int RootLevel = 0;
+    internal const char Tab = '\t';
+
+    internal static void Main()
+    {
+        Console.WriteLine("Enter the path of the root directory:");
+        var rootDirectorypath = Console.ReadLine();
+
+        Console.WriteLine(
+            $"Getting directory tree of '{rootDirectorypath}'");
+
+        PrintDirectoryTree(rootDirectorypath);
+        Console.WriteLine("Press 'Enter' to quit...");
+        Console.ReadLine();
+    }
+
+    internal static void PrintDirectoryTree(string rootDirectoryPath)
+    {
+        try
+        {
+            if (!Directory.Exists(rootDirectoryPath))
+            {
+                throw new DirectoryNotFoundException(
+                    $"Directory '{rootDirectoryPath}' not found.");
+            }
+
+            var rootDirectory = new DirectoryInfo(rootDirectoryPath);
+            PrintDirectoryTree(rootDirectory, RootLevel);
+        }
+        catch (DirectoryNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    private static void PrintDirectoryTree(
+        DirectoryInfo directory, int currentLevel)
+    {
+        var indentation = string.Empty;
+        for (var i = RootLevel; i < currentLevel; i++)
+        {
+            indentation += Tab;
+        }
+
+        Console.WriteLine($"{indentation}-{directory.Name}");
+        var nextLevel = currentLevel + 1;
+        try
+        {
+            foreach (var subDirectory in directory.GetDirectories())
+            {
+                PrintDirectoryTree(subDirectory, nextLevel);
+            }
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Console.WriteLine($"{indentation}-{e.Message}");
+        }
+    }
+}
+
+Этот код несколько сложнее, чем минимальный минимум для выполнения этой задачи, поскольку он включает проверку исключений для обработки любых проблем с получением каталогов. Ниже вы найдете разбивку кода на более мелкие сегменты с объяснениями каждого из них.
+
+Main :
+
+Основной метод принимает вход пользователя как строку, которая должна использоваться как путь к корневому каталогу. Затем он вызывает метод PrintDirectoryTree с этой строкой в ​​качестве параметра.
+
+PrintDirectoryTree(string) :
+
+Это первый из двух методов, которые обрабатывают фактическую печать дерева каталогов. Этот метод принимает строку, представляющую путь к корневому каталогу в качестве параметра. Он проверяет, является ли путь фактическим каталогом, а если нет, генерирует исключение DirectoryNotFoundException которое затем обрабатывается в блоке catch. Если путь является реальным каталогом, DirectoryInfo объект rootDirectory создается с пути, а второй PrintDirectoryTree метод вызывается с rootDirectory объектом и RootLevel , которая является целой константой со значением, равным нулю.
+
+PrintDirectoryTree(DirectoryInfo, int) :
+
+Этот второй метод обрабатывает основной результат работы. В качестве параметров требуется DirectoryInfo и целое число. DirectoryInfo - это текущий каталог, а целое число - это глубина каталога относительно корня. Для удобства чтения выходной сигнал имеет отступ для каждого уровня в глубину текущего каталога, так что вывод выглядит следующим образом:
+
+-Root
+    -Child 1
+    -Child 2
+        -Grandchild 2.1
+    -Child 3
+
+Как только текущий каталог печатается, его вспомогательные каталоги извлекаются, и затем этот метод вызывается для каждого из них с уровнем глубины более одного значения, чем текущий. Эта часть - это рекурсия: метод, вызывающий себя. Программа будет работать таким образом, пока она не посетит все каталоги в дереве. Когда он достигнет каталога без подкаталогов, метод автоматически вернется.
+
+Этот метод также захватывает UnauthorizedAccessException , которое вызывается, если какая-либо из подкаталогов текущего каталога защищена системой. Сообщение об ошибке печатается на текущем уровне отступа для согласованности.
+
+В приведенном ниже методе приведен более общий подход к этой проблеме:
+
+internal static void PrintDirectoryTree(string directoryName)
+{
+    try
+    {
+        if (!Directory.Exists(directoryName)) return;
+        Console.WriteLine(directoryName);
+        foreach (var d in Directory.GetDirectories(directoryName))
+        {
+            PrintDirectoryTree(d);
+        }
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+    }
+}
+
+Это не включает в себя конкретную проверку ошибок или форматирование вывода первого подхода, но это фактически делает то же самое. Поскольку он использует только строки, а не DirectoryInfo , он не может предоставить доступ к другим свойствам каталога, например разрешениям.
+Последовательность Фибоначчи
+
+Вы можете рассчитать число в последовательности Фибоначчи, используя рекурсию.
+
+Следуя математической теории F (n) = F (n-2) + F (n-1), для любого i> 0,
+
+// Returns the i'th Fibonacci number
+public int fib(int i) {
+    if(i <= 2) {
+        // Base case of the recursive function.
+        // i is either 1 or 2, whose associated Fibonacci sequence numbers are 1 and 1.
+        return 1;
+    }
+    // Recursive case. Return the sum of the two previous Fibonacci numbers.
+    // This works because the definition of the Fibonacci sequence specifies
+    // that the sum of two adjacent elements equals the next element.
+    return  fib(i - 2) + fib(i - 1);
+    
+}
+
+fib(10); // Returns 55
+
+Факториальный расчет
+
+Факториал числа (обозначаемого символом!, Как, например, 9!), Является умножением этого числа на факториал одного ниже. Так, например, 9! = 9 х 8! = 9 x 8 x 7! = 9 x 8 x 7 x 6 x 5 x 4 x 3 x 2 x 1.
+
+Таким образом, в коде, который становится, используя рекурсию:
+
+long Factorial(long x)
+{
+    if (x < 1)
+    {
+        throw new OutOfRangeException("Factorial can only be used with positive numbers.");
+    }
+
+    if (x == 1)
+    {
+        return 1;
+    } else {
+        return x * Factorial(x - 1);
+    }
+}
+
+Расчет PowerOf
+
+Вычисление мощности заданного числа может быть также рекурсивным. Учитывая базовое число n и показатель e , мы должны обязательно разделить проблему на куски, уменьшив показатель e .
+
+Теоретический пример:
+
+    2² = 2x2
+    2³ = 2x2x2 или, 2³ = 2² x 2
+    Там лежит секрет нашего рекурсивного алгоритма (см. Код ниже). Речь идет о том, чтобы решить проблему и разделить ее на меньшие и более простые, чтобы решить куски.
+    Заметки
+        когда базовое число равно 0, мы должны знать, что он возвращает 0 как 0³ = 0 x 0 x 0
+        когда показатель степени равен 0, мы должны знать, что всегда нужно возвращать 1, поскольку это математическое правило. 
+
+Пример кода:
+
+public int CalcPowerOf(int b, int e) {
+    if (b == 0) { return 0; } // when base is 0, it doesn't matter, it will always return 0
+    if (e == 0) { return 1; } // math rule, exponent 0 always returns 1
+    return b * CalcPowerOf(b, e - 1); // actual recursive logic, where we split the problem, aka: 2³ = 2 * 2² etc..
+}
+
+Тесты в xUnit для проверки логики:
+Хотя это необязательно, всегда полезно писать тесты для проверки вашей логики. Я включаю те, которые здесь написаны в рамках xUnit .
+
+    [Theory]
+    [MemberData(nameof(PowerOfTestData))]
+    public void PowerOfTest(int @base, int exponent, int expected) {
+        Assert.Equal(expected, CalcPowerOf(@base, exponent));
+    }
+
+    public static IEnumerable<object[]> PowerOfTestData() {
+        yield return new object[] { 0, 0, 0 };
+        yield return new object[] { 0, 1, 0 };
+        yield return new object[] { 2, 0, 1 };
+        yield return new object[] { 2, 1, 2 };
+        yield return new object[] { 2, 2, 4 };
+        yield return new object[] { 5, 2, 25 };
+        yield return new object[] { 5, 3, 125 };
+        yield return new object[] { 5, 4, 625 };
+}
+
+
