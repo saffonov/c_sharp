@@ -46,14 +46,10 @@ void ChangeRows(int[,] arr)
 Console.WriteLine("START");
 
 Console.Write("Введите количество строк:");
-
 int m = int.Parse(Console.ReadLine());
-Console.Write("Введите количество столбцов:");
+
+Console.Write("Введите количество символов:");
 int n = int.Parse(Console.ReadLine());
-Console.Write("Введите минимальное значение:");
-int min = int.Parse(Console.ReadLine());
-Console.Write("Введите минимальное значение:");
-int max = int.Parse(Console.ReadLine());
 
 int[,] arr = GetArray(m, n, min, max);
 Console.WriteLine("Исходный массив");
